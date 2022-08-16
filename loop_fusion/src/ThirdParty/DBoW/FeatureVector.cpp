@@ -14,72 +14,72 @@
 
 namespace DBoW2 {
 
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-FeatureVector::FeatureVector(void)
-{
-}
-
-// ---------------------------------------------------------------------------
-
-FeatureVector::~FeatureVector(void)
-{
-}
-
-// ---------------------------------------------------------------------------
-
-void FeatureVector::addFeature(NodeId id, unsigned int i_feature)
-{
-  FeatureVector::iterator vit = this->lower_bound(id);
-  
-  if(vit != this->end() && vit->first == id)
+  FeatureVector::FeatureVector(void)
   {
-    vit->second.push_back(i_feature);
   }
-  else
+
+  // ---------------------------------------------------------------------------
+
+  FeatureVector::~FeatureVector(void)
   {
-    vit = this->insert(vit, FeatureVector::value_type(id, 
-      std::vector<unsigned int>() ));
-    vit->second.push_back(i_feature);
   }
-}
 
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-std::ostream& operator<<(std::ostream &out, 
-  const FeatureVector &v)
-{
-  if(!v.empty())
+  void FeatureVector::addFeature(NodeId id, unsigned int i_feature)
   {
-    FeatureVector::const_iterator vit = v.begin();
-    
-    const std::vector<unsigned int>* f = &vit->second;
+    FeatureVector::iterator vit = this->lower_bound(id);
 
-    out << "<" << vit->first << ": [";
-    if(!f->empty()) out << (*f)[0];
-    for(unsigned int i = 1; i < f->size(); ++i)
+    if (vit != this->end() && vit->first == id)
     {
-      out << ", " << (*f)[i];
+      vit->second.push_back(i_feature);
     }
-    out << "]>";
-    
-    for(++vit; vit != v.end(); ++vit)
+    else
     {
-      f = &vit->second;
-      
-      out << ", <" << vit->first << ": [";
-      if(!f->empty()) out << (*f)[0];
-      for(unsigned int i = 1; i < f->size(); ++i)
+      vit = this->insert(vit, FeatureVector::value_type(id,
+        std::vector<unsigned int>()));
+      vit->second.push_back(i_feature);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+
+  std::ostream& operator<<(std::ostream& out,
+    const FeatureVector& v)
+  {
+    if (!v.empty())
+    {
+      FeatureVector::const_iterator vit = v.begin();
+
+      const std::vector<unsigned int>* f = &vit->second;
+
+      out << "<" << vit->first << ": [";
+      if (!f->empty()) out << (*f)[0];
+      for (unsigned int i = 1; i < f->size(); ++i)
       {
         out << ", " << (*f)[i];
       }
       out << "]>";
-    }
-  }
-  
-  return out;  
-}
 
-// ---------------------------------------------------------------------------
+      for (++vit; vit != v.end(); ++vit)
+      {
+        f = &vit->second;
+
+        out << ", <" << vit->first << ": [";
+        if (!f->empty()) out << (*f)[0];
+        for (unsigned int i = 1; i < f->size(); ++i)
+        {
+          out << ", " << (*f)[i];
+        }
+        out << "]>";
+      }
+    }
+
+    return out;
+  }
+
+  // ---------------------------------------------------------------------------
 
 } // namespace DBoW2

@@ -1,8 +1,8 @@
 /*******************************************************
  * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
- * 
+ *
  * This file is part of VINS.
- * 
+ *
  * Licensed under the GNU General Public License v3.0;
  * you may not use this file except in compliance with the License.
  *******************************************************/
@@ -21,9 +21,9 @@ public:
 	std::string m_marker_ns;
 
 	CameraPoseVisualization(float r, float g, float b, float a);
-	
-	void setImageBoundaryColor(float r, float g, float b, float a=1.0);
-	void setOpticalCenterConnectorColor(float r, float g, float b, float a=1.0);
+
+	void setImageBoundaryColor(float r, float g, float b, float a = 1.0);
+	void setOpticalCenterConnectorColor(float r, float g, float b, float a = 1.0);
 	void setScale(double s);
 	void setLineWidth(double width);
 
@@ -44,8 +44,8 @@ private:
 	static const Eigen::Vector3d imlb;
 	static const Eigen::Vector3d imrt;
 	static const Eigen::Vector3d imrb;
-	static const Eigen::Vector3d oc  ;
-	static const Eigen::Vector3d lt0 ;
-	static const Eigen::Vector3d lt1 ;
-	static const Eigen::Vector3d lt2 ;
+	static const Eigen::Vector3d oc;
+	static const Eigen::Vector3d lt0;
+	static const Eigen::Vector3d lt1;
+	static const Eigen::Vector3d lt2;
 };

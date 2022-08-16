@@ -77,9 +77,9 @@ namespace GeographicLib {
     static const size_t dim2_ = dim_ * dim_;
     real _a, _f, _e2, _e2m, _e2a, _e4a, _maxrad;
     static void Rotation(real sphi, real cphi, real slam, real clam,
-                         real M[dim2_]);
+      real M[dim2_]);
     static void Rotate(real M[dim2_], real x, real y, real z,
-                       real& X, real& Y, real& Z) {
+      real& X, real& Y, real& Z) {
       // Perform [X,Y,Z]^t = M.[x,y,z]^t
       // (typically local cartesian to geocentric)
       X = M[0] * x + M[1] * y + M[2] * z;
@@ -87,7 +87,7 @@ namespace GeographicLib {
       Z = M[6] * x + M[7] * y + M[8] * z;
     }
     static void Unrotate(real M[dim2_], real X, real Y, real Z,
-                         real& x, real& y, real& z)  {
+      real& x, real& y, real& z) {
       // Perform [x,y,z]^t = M^t.[X,Y,Z]^t
       // (typically geocentric to local cartesian)
       x = M[0] * X + M[3] * Y + M[6] * Z;
@@ -95,9 +95,9 @@ namespace GeographicLib {
       z = M[2] * X + M[5] * Y + M[8] * Z;
     }
     void IntForward(real lat, real lon, real h, real& X, real& Y, real& Z,
-                    real M[dim2_]) const;
+      real M[dim2_]) const;
     void IntReverse(real X, real Y, real Z, real& lat, real& lon, real& h,
-                    real M[dim2_]) const;
+      real M[dim2_]) const;
 
   public:
 
@@ -159,7 +159,7 @@ namespace GeographicLib {
      * Then we have \e v0 = \e M &sdot; \e v1.
      **********************************************************************/
     void Forward(real lat, real lon, real h, real& X, real& Y, real& Z,
-                 std::vector<real>& M)
+      std::vector<real>& M)
       const {
       if (!Init())
         return;
@@ -167,7 +167,8 @@ namespace GeographicLib {
         real t[dim2_];
         IntForward(lat, lon, h, X, Y, Z, t);
         std::copy(t, t + dim2_, M.begin());
-      } else
+      }
+      else
         IntForward(lat, lon, h, X, Y, Z, NULL);
     }
 
@@ -221,7 +222,7 @@ namespace GeographicLib {
      * <i>M</i><sup>T</sup> is the transpose of \e M.
      **********************************************************************/
     void Reverse(real X, real Y, real Z, real& lat, real& lon, real& h,
-                 std::vector<real>& M)
+      std::vector<real>& M)
       const {
       if (!Init())
         return;
@@ -229,30 +230,35 @@ namespace GeographicLib {
         real t[dim2_];
         IntReverse(X, Y, Z, lat, lon, h, t);
         std::copy(t, t + dim2_, M.begin());
-      } else
+      }
+      else
         IntReverse(X, Y, Z, lat, lon, h, NULL);
     }
 
     /** \name Inspector functions
      **********************************************************************/
-    ///@{
-    /**
-     * @return true if the object has been initialized.
-     **********************************************************************/
+     ///@{
+     /**
+      * @return true if the object has been initialized.
+      **********************************************************************/
     bool Init() const { return _a > 0; }
     /**
      * @return \e a the equatorial radius of the ellipsoid (meters).  This is
      *   the value used in the constructor.
      **********************************************************************/
     Math::real MajorRadius() const
-    { return Init() ? _a : Math::NaN(); }
+    {
+      return Init() ? _a : Math::NaN();
+    }
 
     /**
      * @return \e f the  flattening of the ellipsoid.  This is the
      *   value used in the constructor.
      **********************************************************************/
     Math::real Flattening() const
-    { return Init() ? _f : Math::NaN(); }
+    {
+      return Init() ? _f : Math::NaN();
+    }
     ///@}
 
     /**

@@ -1,8 +1,8 @@
 /*******************************************************
  * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
- * 
+ *
  * This file is part of VINS.
- * 
+ *
  * Licensed under the GNU General Public License v3.0;
  * you may not use this file except in compliance with the License.
  *
@@ -32,7 +32,7 @@ public:
 	~GlobalOptimization();
 	void inputGPS(double t, double latitude, double longitude, double altitude, double posAccuracy);
 	void inputOdom(double t, Eigen::Vector3d OdomP, Eigen::Quaterniond OdomQ);
-	void getGlobalOdom(Eigen::Vector3d &odomP, Eigen::Quaterniond &odomQ);
+	void getGlobalOdom(Eigen::Vector3d& odomP, Eigen::Quaterniond& odomQ);
 	nav_msgs::Path global_path;
 
 private:

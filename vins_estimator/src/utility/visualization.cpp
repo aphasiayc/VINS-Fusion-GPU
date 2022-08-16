@@ -1,8 +1,8 @@
 /*******************************************************
  * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
- * 
+ *
  * This file is part of VINS.
- * 
+ *
  * Licensed under the GNU General Public License v3.0;
  * you may not use this file except in compliance with the License.
  *******************************************************/
@@ -32,7 +32,7 @@ static Vector3d last_path(0.0, 0.0, 0.0);
 
 size_t pub_counter = 0;
 
-void registerPub(ros::NodeHandle &n)
+void registerPub(ros::NodeHandle& n)
 {
     pub_latest_odometry = n.advertise<nav_msgs::Odometry>("imu_propagate", 1000);
     pub_path = n.advertise<nav_msgs::Path>("path", 1000);
@@ -53,7 +53,7 @@ void registerPub(ros::NodeHandle &n)
     cameraposevisual.setLineWidth(0.01);
 }
 
-void pubLatestOdometry(const Eigen::Vector3d &P, const Eigen::Quaterniond &Q, const Eigen::Vector3d &V, double t)
+void pubLatestOdometry(const Eigen::Vector3d& P, const Eigen::Quaterniond& Q, const Eigen::Vector3d& V, double t)
 {
     nav_msgs::Odometry odometry;
     odometry.header.stamp = ros::Time(t);
@@ -71,7 +71,7 @@ void pubLatestOdometry(const Eigen::Vector3d &P, const Eigen::Quaterniond &Q, co
     pub_latest_odometry.publish(odometry);
 }
 
-void printStatistics(const Estimator &estimator, double t)
+void printStatistics(const Estimator& estimator, double t)
 {
     if (estimator.solver_flag != Estimator::SolverFlag::NON_LINEAR)
         return;
@@ -92,10 +92,10 @@ void printStatistics(const Estimator &estimator, double t)
             eigen_T.block<3, 1>(0, 3) = estimator.tic[i];
             cv::Mat cv_T;
             cv::eigen2cv(eigen_T, cv_T);
-            if(i == 0)
-                fs << "body_T_cam0" << cv_T ;
+            if (i == 0)
+                fs << "body_T_cam0" << cv_T;
             else
-                fs << "body_T_cam1" << cv_T ;
+                fs << "body_T_cam1" << cv_T;
         }
         fs.release();
     }
@@ -114,7 +114,7 @@ void printStatistics(const Estimator &estimator, double t)
         ROS_INFO("td %f", estimator.td);
 }
 
-void pubOdometry(const Estimator &estimator, const std_msgs::Header &header)
+void pubOdometry(const Estimator& estimator, const std_msgs::Header& header)
 {
     if (estimator.solver_flag == Estimator::SolverFlag::NON_LINEAR)
     {
@@ -152,23 +152,23 @@ void pubOdometry(const Estimator &estimator, const std_msgs::Header &header)
         foutC << header.stamp.toSec() * 1e9 << ",";
         foutC.precision(5);
         foutC << estimator.Ps[WINDOW_SIZE].x() << ","
-              << estimator.Ps[WINDOW_SIZE].y() << ","
-              << estimator.Ps[WINDOW_SIZE].z() << ","
-              << tmp_Q.w() << ","
-              << tmp_Q.x() << ","
-              << tmp_Q.y() << ","
-              << tmp_Q.z() << ","
-              << estimator.Vs[WINDOW_SIZE].x() << ","
-              << estimator.Vs[WINDOW_SIZE].y() << ","
-              << estimator.Vs[WINDOW_SIZE].z() << "," << endl;
+            << estimator.Ps[WINDOW_SIZE].y() << ","
+            << estimator.Ps[WINDOW_SIZE].z() << ","
+            << tmp_Q.w() << ","
+            << tmp_Q.x() << ","
+            << tmp_Q.y() << ","
+            << tmp_Q.z() << ","
+            << estimator.Vs[WINDOW_SIZE].x() << ","
+            << estimator.Vs[WINDOW_SIZE].y() << ","
+            << estimator.Vs[WINDOW_SIZE].z() << "," << endl;
         foutC.close();
         Eigen::Vector3d tmp_T = estimator.Ps[WINDOW_SIZE];
         printf("time: %f, t: %f %f %f q: %f %f %f %f \n", header.stamp.toSec(), tmp_T.x(), tmp_T.y(), tmp_T.z(),
-                                                          tmp_Q.w(), tmp_Q.x(), tmp_Q.y(), tmp_Q.z());
+            tmp_Q.w(), tmp_Q.x(), tmp_Q.y(), tmp_Q.z());
     }
 }
 
-void pubKeyPoses(const Estimator &estimator, const std_msgs::Header &header)
+void pubKeyPoses(const Estimator& estimator, const std_msgs::Header& header)
 {
     if (estimator.key_poses.size() == 0)
         return;
@@ -202,7 +202,7 @@ void pubKeyPoses(const Estimator &estimator, const std_msgs::Header &header)
     pub_key_poses.publish(key_poses);
 }
 
-void pubCameraPose(const Estimator &estimator, const std_msgs::Header &header)
+void pubCameraPose(const Estimator& estimator, const std_msgs::Header& header)
 {
     int idx2 = WINDOW_SIZE - 1;
 
@@ -223,7 +223,7 @@ void pubCameraPose(const Estimator &estimator, const std_msgs::Header &header)
         odometry.pose.pose.orientation.z = R.z();
         odometry.pose.pose.orientation.w = R.w();
 
-        if(STEREO)
+        if (STEREO)
         {
             Vector3d P_r = estimator.Ps[i] + estimator.Rs[i] * estimator.tic[1];
             Quaterniond R_r = Quaterniond(estimator.Rs[i] * estimator.ric[1]);
@@ -239,7 +239,7 @@ void pubCameraPose(const Estimator &estimator, const std_msgs::Header &header)
             odometry_r.pose.pose.orientation.z = R_r.z();
             odometry_r.pose.pose.orientation.w = R_r.w();
             pub_camera_pose_right.publish(odometry_r);
-            if(PUB_RECTIFY)
+            if (PUB_RECTIFY)
             {
                 Vector3d R_P_l = P;
                 Vector3d R_P_r = P_r;
@@ -276,7 +276,7 @@ void pubCameraPose(const Estimator &estimator, const std_msgs::Header &header)
 
         cameraposevisual.reset();
         cameraposevisual.add_pose(P, R);
-        if(STEREO)
+        if (STEREO)
         {
             Vector3d P = estimator.Ps[i] + estimator.Rs[i] * estimator.tic[1];
             Quaterniond R = Quaterniond(estimator.Rs[i] * estimator.ric[1]);
@@ -287,14 +287,14 @@ void pubCameraPose(const Estimator &estimator, const std_msgs::Header &header)
 }
 
 
-void pubPointCloud(const Estimator &estimator, const std_msgs::Header &header)
+void pubPointCloud(const Estimator& estimator, const std_msgs::Header& header)
 {
     sensor_msgs::PointCloud point_cloud, loop_point_cloud;
     point_cloud.header = header;
     loop_point_cloud.header = header;
 
 
-    for (auto &it_per_id : estimator.f_manager.feature)
+    for (auto& it_per_id : estimator.f_manager.feature)
     {
         int used_num;
         used_num = it_per_id.feature_per_frame.size();
@@ -319,8 +319,8 @@ void pubPointCloud(const Estimator &estimator, const std_msgs::Header &header)
     sensor_msgs::PointCloud margin_cloud;
     margin_cloud.header = header;
 
-    for (auto &it_per_id : estimator.f_manager.feature)
-    { 
+    for (auto& it_per_id : estimator.f_manager.feature)
+    {
         int used_num;
         used_num = it_per_id.feature_per_frame.size();
         if (!(used_num >= 2 && it_per_id.start_frame < WINDOW_SIZE - 2))
@@ -328,8 +328,8 @@ void pubPointCloud(const Estimator &estimator, const std_msgs::Header &header)
         //if (it_per_id->start_frame > WINDOW_SIZE * 3.0 / 4.0 || it_per_id->solve_flag != 1)
         //        continue;
 
-        if (it_per_id.start_frame == 0 && it_per_id.feature_per_frame.size() <= 2 
-            && it_per_id.solve_flag == 1 )
+        if (it_per_id.start_frame == 0 && it_per_id.feature_per_frame.size() <= 2
+            && it_per_id.solve_flag == 1)
         {
             int imu_i = it_per_id.start_frame;
             Vector3d pts_i = it_per_id.feature_per_frame[0].point * it_per_id.estimated_depth;
@@ -346,9 +346,9 @@ void pubPointCloud(const Estimator &estimator, const std_msgs::Header &header)
 }
 
 
-void pubTF(const Estimator &estimator, const std_msgs::Header &header)
+void pubTF(const Estimator& estimator, const std_msgs::Header& header)
 {
-    if( estimator.solver_flag != Estimator::SolverFlag::NON_LINEAR)
+    if (estimator.solver_flag != Estimator::SolverFlag::NON_LINEAR)
         return;
     static tf::TransformBroadcaster br;
     tf::Transform transform;
@@ -360,8 +360,8 @@ void pubTF(const Estimator &estimator, const std_msgs::Header &header)
     correct_q = estimator.Rs[WINDOW_SIZE];
 
     transform.setOrigin(tf::Vector3(correct_t(0),
-                                    correct_t(1),
-                                    correct_t(2)));
+        correct_t(1),
+        correct_t(2)));
     q.setW(correct_q.w());
     q.setX(correct_q.x());
     q.setY(correct_q.y());
@@ -371,8 +371,8 @@ void pubTF(const Estimator &estimator, const std_msgs::Header &header)
 
     // camera frame
     transform.setOrigin(tf::Vector3(estimator.tic[0].x(),
-                                    estimator.tic[0].y(),
-                                    estimator.tic[0].z()));
+        estimator.tic[0].y(),
+        estimator.tic[0].z()));
     q.setW(Quaterniond(estimator.ric[0]).w());
     q.setX(Quaterniond(estimator.ric[0]).x());
     q.setY(Quaterniond(estimator.ric[0]).y());
@@ -380,14 +380,14 @@ void pubTF(const Estimator &estimator, const std_msgs::Header &header)
     transform.setRotation(q);
     br.sendTransform(tf::StampedTransform(transform, header.stamp, "body", "camera"));
 
-    
+
     nav_msgs::Odometry odometry;
     odometry.header = header;
     odometry.header.frame_id = "world";
     odometry.pose.pose.position.x = estimator.tic[0].x();
     odometry.pose.pose.position.y = estimator.tic[0].y();
     odometry.pose.pose.position.z = estimator.tic[0].z();
-    Quaterniond tmp_q{estimator.ric[0]};
+    Quaterniond tmp_q{ estimator.ric[0] };
     odometry.pose.pose.orientation.x = tmp_q.x();
     odometry.pose.pose.orientation.y = tmp_q.y();
     odometry.pose.pose.orientation.z = tmp_q.z();
@@ -396,7 +396,7 @@ void pubTF(const Estimator &estimator, const std_msgs::Header &header)
 
 }
 
-void pubKeyframe(const Estimator &estimator)
+void pubKeyframe(const Estimator& estimator)
 {
     // pub camera pose, 2D-3D points of keyframe
     if (estimator.solver_flag == Estimator::SolverFlag::NON_LINEAR && estimator.marginalization_flag == 0)
@@ -424,16 +424,16 @@ void pubKeyframe(const Estimator &estimator)
         sensor_msgs::PointCloud point_cloud;
         point_cloud.header.stamp = ros::Time(estimator.Headers[WINDOW_SIZE - 2]);
         point_cloud.header.frame_id = "world";
-        for (auto &it_per_id : estimator.f_manager.feature)
+        for (auto& it_per_id : estimator.f_manager.feature)
         {
             int frame_size = it_per_id.feature_per_frame.size();
-            if(it_per_id.start_frame < WINDOW_SIZE - 2 && it_per_id.start_frame + frame_size - 1 >= WINDOW_SIZE - 2 && it_per_id.solve_flag == 1)
+            if (it_per_id.start_frame < WINDOW_SIZE - 2 && it_per_id.start_frame + frame_size - 1 >= WINDOW_SIZE - 2 && it_per_id.solve_flag == 1)
             {
 
                 int imu_i = it_per_id.start_frame;
                 Vector3d pts_i = it_per_id.feature_per_frame[0].point * it_per_id.estimated_depth;
                 Vector3d w_pts_i = estimator.Rs[imu_i] * (estimator.ric[0] * pts_i + estimator.tic[0])
-                                      + estimator.Ps[imu_i];
+                    + estimator.Ps[imu_i];
                 geometry_msgs::Point32 p;
                 p.x = w_pts_i(0);
                 p.y = w_pts_i(1);

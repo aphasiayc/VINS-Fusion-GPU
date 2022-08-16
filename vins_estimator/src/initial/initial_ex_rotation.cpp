@@ -1,8 +1,8 @@
 /*******************************************************
  * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
- * 
+ *
  * This file is part of VINS.
- * 
+ *
  * Licensed under the GNU General Public License v3.0;
  * you may not use this file except in compliance with the License.
  *
@@ -11,7 +11,7 @@
 
 #include "initial_ex_rotation.h"
 
-InitialEXRotation::InitialEXRotation(){
+InitialEXRotation::InitialEXRotation() {
     frame_count = 0;
     Rc.push_back(Matrix3d::Identity());
     Rc_g.push_back(Matrix3d::Identity());
@@ -19,7 +19,7 @@ InitialEXRotation::InitialEXRotation(){
     ric = Matrix3d::Identity();
 }
 
-bool InitialEXRotation::CalibrationExRotation(vector<pair<Vector3d, Vector3d>> corres, Quaterniond delta_q_imu, Matrix3d &calib_ric_result)
+bool InitialEXRotation::CalibrationExRotation(vector<pair<Vector3d, Vector3d>> corres, Quaterniond delta_q_imu, Matrix3d& calib_ric_result)
 {
     frame_count++;
     Rc.push_back(solveRelativeR(corres));
@@ -77,7 +77,7 @@ bool InitialEXRotation::CalibrationExRotation(vector<pair<Vector3d, Vector3d>> c
         return false;
 }
 
-Matrix3d InitialEXRotation::solveRelativeR(const vector<pair<Vector3d, Vector3d>> &corres)
+Matrix3d InitialEXRotation::solveRelativeR(const vector<pair<Vector3d, Vector3d>>& corres)
 {
     if (corres.size() >= 9)
     {
@@ -109,17 +109,17 @@ Matrix3d InitialEXRotation::solveRelativeR(const vector<pair<Vector3d, Vector3d>
     return Matrix3d::Identity();
 }
 
-double InitialEXRotation::testTriangulation(const vector<cv::Point2f> &l,
-                                          const vector<cv::Point2f> &r,
-                                          cv::Mat_<double> R, cv::Mat_<double> t)
+double InitialEXRotation::testTriangulation(const vector<cv::Point2f>& l,
+    const vector<cv::Point2f>& r,
+    cv::Mat_<double> R, cv::Mat_<double> t)
 {
     cv::Mat pointcloud;
     cv::Matx34f P = cv::Matx34f(1, 0, 0, 0,
-                                0, 1, 0, 0,
-                                0, 0, 1, 0);
+        0, 1, 0, 0,
+        0, 0, 1, 0);
     cv::Matx34f P1 = cv::Matx34f(R(0, 0), R(0, 1), R(0, 2), t(0),
-                                 R(1, 0), R(1, 1), R(1, 2), t(1),
-                                 R(2, 0), R(2, 1), R(2, 2), t(2));
+        R(1, 0), R(1, 1), R(1, 2), t(1),
+        R(2, 0), R(2, 1), R(2, 2), t(2));
     cv::triangulatePoints(P, P1, l, r, pointcloud);
     int front_count = 0;
     for (int i = 0; i < pointcloud.cols; i++)
@@ -136,16 +136,16 @@ double InitialEXRotation::testTriangulation(const vector<cv::Point2f> &l,
 }
 
 void InitialEXRotation::decomposeE(cv::Mat E,
-                                 cv::Mat_<double> &R1, cv::Mat_<double> &R2,
-                                 cv::Mat_<double> &t1, cv::Mat_<double> &t2)
+    cv::Mat_<double>& R1, cv::Mat_<double>& R2,
+    cv::Mat_<double>& t1, cv::Mat_<double>& t2)
 {
     cv::SVD svd(E, cv::SVD::MODIFY_A);
     cv::Matx33d W(0, -1, 0,
-                  1, 0, 0,
-                  0, 0, 1);
+        1, 0, 0,
+        0, 0, 1);
     cv::Matx33d Wt(0, 1, 0,
-                   -1, 0, 0,
-                   0, 0, 1);
+        -1, 0, 0,
+        0, 0, 1);
     R1 = svd.u * cv::Mat(W) * svd.vt;
     R2 = svd.u * cv::Mat(Wt) * svd.vt;
     t1 = svd.u.col(2);

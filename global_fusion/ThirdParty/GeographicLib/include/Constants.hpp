@@ -12,63 +12,63 @@
 
 #include "Config.h"
 
-/**
- * @relates GeographicLib::Constants
- * Pack the version components into a single integer.  Users should not rely on
- * this particular packing of the components of the version number; see the
- * documentation for GEOGRAPHICLIB_VERSION, below.
- **********************************************************************/
+ /**
+  * @relates GeographicLib::Constants
+  * Pack the version components into a single integer.  Users should not rely on
+  * this particular packing of the components of the version number; see the
+  * documentation for GEOGRAPHICLIB_VERSION, below.
+  **********************************************************************/
 #define GEOGRAPHICLIB_VERSION_NUM(a,b,c) ((((a) * 10000 + (b)) * 100) + (c))
 
-/**
- * @relates GeographicLib::Constants
- * The version of GeographicLib as a single integer, packed as MMmmmmpp where
- * MM is the major version, mmmm is the minor version, and pp is the patch
- * level.  Users should not rely on this particular packing of the components
- * of the version number.  Instead they should use a test such as \code
-   #if GEOGRAPHICLIB_VERSION >= GEOGRAPHICLIB_VERSION_NUM(1,37,0)
-   ...
-   #endif
- * \endcode
- **********************************************************************/
+  /**
+   * @relates GeographicLib::Constants
+   * The version of GeographicLib as a single integer, packed as MMmmmmpp where
+   * MM is the major version, mmmm is the minor version, and pp is the patch
+   * level.  Users should not rely on this particular packing of the components
+   * of the version number.  Instead they should use a test such as \code
+     #if GEOGRAPHICLIB_VERSION >= GEOGRAPHICLIB_VERSION_NUM(1,37,0)
+     ...
+     #endif
+   * \endcode
+   **********************************************************************/
 #define GEOGRAPHICLIB_VERSION \
  GEOGRAPHICLIB_VERSION_NUM(GEOGRAPHICLIB_VERSION_MAJOR, \
                            GEOGRAPHICLIB_VERSION_MINOR, \
                            GEOGRAPHICLIB_VERSION_PATCH)
 
-/**
- * @relates GeographicLib::Constants
- * Is the C++11 static_assert available?
- **********************************************************************/
+   /**
+    * @relates GeographicLib::Constants
+    * Is the C++11 static_assert available?
+    **********************************************************************/
 #if !defined(GEOGRAPHICLIB_HAS_STATIC_ASSERT)
 #  if __cplusplus >= 201103 || defined(__GXX_EXPERIMENTAL_CXX0X__)
 #    define GEOGRAPHICLIB_HAS_STATIC_ASSERT 1
 #  elif defined(_MSC_VER) && _MSC_VER >= 1600
-// For reference, here is a table of Visual Studio and _MSC_VER
-// correspondences:
-//
-// _MSC_VER  Visual Studio
-//   1100     vc5
-//   1200     vc6
-//   1300     vc7
-//   1310     vc7.1 (2003)
-//   1400     vc8   (2005)
-//   1500     vc9   (2008)
-//   1600     vc10  (2010)
-//   1700     vc11  (2012)
-//   1800     vc12  (2013)
-//   1900     vc14  (2015)
-//   1910+    vc15  (2017)
+    // For reference, here is a table of Visual Studio and _MSC_VER
+    // correspondences:
+    //
+    // _MSC_VER  Visual Studio
+    //   1100     vc5
+    //   1200     vc6
+    //   1300     vc7
+    //   1310     vc7.1 (2003)
+    //   1400     vc8   (2005)
+    //   1500     vc9   (2008)
+    //   1600     vc10  (2010)
+    //   1700     vc11  (2012)
+    //   1800     vc12  (2013)
+    //   1900     vc14  (2015)
+    //   1910+    vc15  (2017)
 #    define GEOGRAPHICLIB_HAS_STATIC_ASSERT 1
 #  else
 #    define GEOGRAPHICLIB_HAS_STATIC_ASSERT 0
 #  endif
 #endif
 
-/**
- * @relates GeographicLib::Constants
- * A compile-time assert.  Use C++11 static_assert, if available.
- **********************************************************************/
+    /**
+     * @relates GeographicLib::Constants
+     * A compile-time assert.  Use C++11 static_assert, if available.
+     **********************************************************************/
 #if !defined(GEOGRAPHICLIB_STATIC_ASSERT)
 #  if GEOGRAPHICLIB_HAS_STATIC_ASSERT
 #    define GEOGRAPHICLIB_STATIC_ASSERT static_assert
@@ -91,9 +91,9 @@
 #  define GEOGRAPHICLIB_EXPORT
 #endif
 
-// Use GEOGRAPHICLIB_DEPRECATED to mark functions, types or variables as
-// deprecated.  Code inspired by Apache Subversion's svn_types.h file (via
-// MPFR).
+     // Use GEOGRAPHICLIB_DEPRECATED to mark functions, types or variables as
+     // deprecated.  Code inspired by Apache Subversion's svn_types.h file (via
+     // MPFR).
 #if defined(__GNUC__)
 #  if __GNUC__ > 4
 #    define GEOGRAPHICLIB_DEPRECATED(msg) __attribute__((deprecated(msg)))
@@ -142,22 +142,28 @@ namespace GeographicLib {
      * @return the number of radians in an arcminute.
      **********************************************************************/
     static Math::real arcminute()
-    { return Math::degree() / 60; }
+    {
+      return Math::degree() / 60;
+    }
     /**
      * @return the number of radians in an arcsecond.
      **********************************************************************/
     static Math::real arcsecond()
-    { return Math::degree() / 3600; }
+    {
+      return Math::degree() / 3600;
+    }
 
     /** \name Ellipsoid parameters
      **********************************************************************/
-    ///@{
-    /**
-     * @tparam T the type of the returned value.
-     * @return the equatorial radius of WGS84 ellipsoid (6378137 m).
-     **********************************************************************/
+     ///@{
+     /**
+      * @tparam T the type of the returned value.
+      * @return the equatorial radius of WGS84 ellipsoid (6378137 m).
+      **********************************************************************/
     template<typename T> static T WGS84_a()
-    { return 6378137 * meter<T>(); }
+    {
+      return 6378137 * meter<T>();
+    }
     /**
      * A synonym for WGS84_a<real>().
      **********************************************************************/
@@ -170,7 +176,7 @@ namespace GeographicLib {
       // Evaluating this as 1000000000 / T(298257223563LL) reduces the
       // round-off error by about 10%.  However, expressing the flattening as
       // 1/298.257223563 is well ingrained.
-      return 1 / ( T(298257223563LL) / 1000000000 );
+      return 1 / (T(298257223563LL) / 1000000000);
     }
     /**
      * A synonym for WGS84_f<real>().
@@ -182,7 +188,9 @@ namespace GeographicLib {
      *   m<sup>3</sup> s<sup>&minus;2</sup>.
      **********************************************************************/
     template<typename T> static T WGS84_GM()
-    { return T(3986004) * 100000000 + 41800000; }
+    {
+      return T(3986004) * 100000000 + 41800000;
+    }
     /**
      * A synonym for WGS84_GM<real>().
      **********************************************************************/
@@ -193,7 +201,9 @@ namespace GeographicLib {
      *   s<sup>&minus;1</sup>.
      **********************************************************************/
     template<typename T> static T WGS84_omega()
-    { return 7292115 / (T(1000000) * 100000); }
+    {
+      return 7292115 / (T(1000000) * 100000);
+    }
     /**
      * A synonym for WGS84_omega<real>().
      **********************************************************************/
@@ -203,7 +213,9 @@ namespace GeographicLib {
      * @return the equatorial radius of GRS80 ellipsoid, \e a, in m.
      **********************************************************************/
     template<typename T> static T GRS80_a()
-    { return 6378137 * meter<T>(); }
+    {
+      return 6378137 * meter<T>();
+    }
     /**
      * A synonym for GRS80_a<real>().
      **********************************************************************/
@@ -214,7 +226,9 @@ namespace GeographicLib {
      *   m<sup>3</sup> s<sup>&minus;2</sup>.
      **********************************************************************/
     template<typename T> static T GRS80_GM()
-    { return T(3986005) * 100000000; }
+    {
+      return T(3986005) * 100000000;
+    }
     /**
      * A synonym for GRS80_GM<real>().
      **********************************************************************/
@@ -232,7 +246,9 @@ namespace GeographicLib {
      * earth's axis).
      **********************************************************************/
     template<typename T> static T GRS80_omega()
-    { return 7292115 / (T(1000000) * 100000); }
+    {
+      return 7292115 / (T(1000000) * 100000);
+    }
     /**
      * A synonym for GRS80_omega<real>().
      **********************************************************************/
@@ -243,7 +259,9 @@ namespace GeographicLib {
      *   <i>J</i><sub>2</sub>.
      **********************************************************************/
     template<typename T> static T GRS80_J2()
-    { return T(108263) / 100000000; }
+    {
+      return T(108263) / 100000000;
+    }
     /**
      * A synonym for GRS80_J2<real>().
      **********************************************************************/
@@ -253,7 +271,9 @@ namespace GeographicLib {
      * @return the central scale factor for UTM (0.9996).
      **********************************************************************/
     template<typename T> static T UTM_k0()
-    {return T(9996) / 10000; }
+    {
+      return T(9996) / 10000;
+    }
     /**
      * A synonym for UTM_k0<real>().
      **********************************************************************/
@@ -263,7 +283,9 @@ namespace GeographicLib {
      * @return the central scale factor for UPS (0.994).
      **********************************************************************/
     template<typename T> static T UPS_k0()
-    { return T(994) / 1000; }
+    {
+      return T(994) / 1000;
+    }
     /**
      * A synonym for UPS_k0<real>().
      **********************************************************************/
@@ -272,14 +294,14 @@ namespace GeographicLib {
 
     /** \name SI units
      **********************************************************************/
-    ///@{
-    /**
-     * @tparam T the type of the returned value.
-     * @return the number of meters in a meter.
-     *
-     * This is unity, but this lets the internal system of units be changed if
-     * necessary.
-     **********************************************************************/
+     ///@{
+     /**
+      * @tparam T the type of the returned value.
+      * @return the number of meters in a meter.
+      *
+      * This is unity, but this lets the internal system of units be changed if
+      * necessary.
+      **********************************************************************/
     template<typename T> static T meter() { return T(1); }
     /**
      * A synonym for meter<real>().
@@ -289,13 +311,17 @@ namespace GeographicLib {
      * @return the number of meters in a kilometer.
      **********************************************************************/
     static Math::real kilometer()
-    { return 1000 * meter<real>(); }
+    {
+      return 1000 * meter<real>();
+    }
     /**
      * @return the number of meters in a nautical mile (approximately 1 arc
      *   minute)
      **********************************************************************/
     static Math::real nauticalmile()
-    { return 1852 * meter<real>(); }
+    {
+      return 1852 * meter<real>();
+    }
 
     /**
      * @tparam T the type of the returned value.
@@ -305,37 +331,49 @@ namespace GeographicLib {
      * necessary.
      **********************************************************************/
     template<typename T> static T square_meter()
-    { return meter<real>() * meter<real>(); }
+    {
+      return meter<real>() * meter<real>();
+    }
     /**
      * A synonym for square_meter<real>().
      **********************************************************************/
     static Math::real square_meter()
-    { return square_meter<real>(); }
+    {
+      return square_meter<real>();
+    }
     /**
      * @return the number of square meters in a hectare.
      **********************************************************************/
     static Math::real hectare()
-    { return 10000 * square_meter<real>(); }
+    {
+      return 10000 * square_meter<real>();
+    }
     /**
      * @return the number of square meters in a square kilometer.
      **********************************************************************/
     static Math::real square_kilometer()
-    { return kilometer() * kilometer(); }
+    {
+      return kilometer() * kilometer();
+    }
     /**
      * @return the number of square meters in a square nautical mile.
      **********************************************************************/
     static Math::real square_nauticalmile()
-    { return nauticalmile() * nauticalmile(); }
+    {
+      return nauticalmile() * nauticalmile();
+    }
     ///@}
 
     /** \name Anachronistic British units
      **********************************************************************/
-    ///@{
-    /**
-     * @return the number of meters in an international foot.
-     **********************************************************************/
+     ///@{
+     /**
+      * @return the number of meters in an international foot.
+      **********************************************************************/
     static Math::real foot()
-    { return real(254 * 12) / 10000 * meter<real>(); }
+    {
+      return real(254 * 12) / 10000 * meter<real>();
+    }
     /**
      * @return the number of meters in a yard.
      **********************************************************************/
@@ -368,12 +406,14 @@ namespace GeographicLib {
 
     /** \name Anachronistic US units
      **********************************************************************/
-    ///@{
-    /**
-     * @return the number of meters in a US survey foot.
-     **********************************************************************/
+     ///@{
+     /**
+      * @return the number of meters in a US survey foot.
+      **********************************************************************/
     static Math::real surveyfoot()
-    { return real(1200) / 3937 * meter<real>(); }
+    {
+      return real(1200) / 3937 * meter<real>();
+    }
     ///@}
   };
 

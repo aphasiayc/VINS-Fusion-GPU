@@ -1,14 +1,14 @@
 /*******************************************************
  * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
- * 
+ *
  * This file is part of VINS.
- * 
+ *
  * Licensed under the GNU General Public License v3.0;
  * you may not use this file except in compliance with the License.
  *******************************************************/
 
 #pragma once
- 
+
 #include <thread>
 #include <mutex>
 #include <std_msgs/Header.h>
@@ -39,25 +39,25 @@
 
 class Estimator
 {
-  public:
+public:
     Estimator();
 
     void setParameter();
 
     // interface
     void initFirstPose(Eigen::Vector3d p, Eigen::Matrix3d r);
-    void inputIMU(double t, const Vector3d &linearAcceleration, const Vector3d &angularVelocity);
-    void inputFeature(double t, const map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> &featureFrame);
-    void inputImage(double t, const cv::Mat &_img, const cv::Mat &_img1 = cv::Mat());
-    void processIMU(double t, double dt, const Vector3d &linear_acceleration, const Vector3d &angular_velocity);
-    void processImage(const map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> &image, const double header);
+    void inputIMU(double t, const Vector3d& linearAcceleration, const Vector3d& angularVelocity);
+    void inputFeature(double t, const map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>>& featureFrame);
+    void inputImage(double t, const cv::Mat& _img, const cv::Mat& _img1 = cv::Mat());
+    void processIMU(double t, double dt, const Vector3d& linear_acceleration, const Vector3d& angular_velocity);
+    void processImage(const map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>>& image, const double header);
     void processMeasurements();
 
     // internal
     void clearState();
     bool initialStructure();
     bool visualInitialAlign();
-    bool relativePose(Matrix3d &relative_R, Vector3d &relative_T, int &l);
+    bool relativePose(Matrix3d& relative_R, Vector3d& relative_T, int& l);
     void slideWindow();
     void slideWindowNew();
     void slideWindowOld();
@@ -65,19 +65,19 @@ class Estimator
     void vector2double();
     void double2vector();
     bool failureDetection();
-    bool getIMUInterval(double t0, double t1, vector<pair<double, Eigen::Vector3d>> &accVector, 
-                                              vector<pair<double, Eigen::Vector3d>> &gyrVector);
-    void getPoseInWorldFrame(Eigen::Matrix4d &T);
-    void getPoseInWorldFrame(int index, Eigen::Matrix4d &T);
+    bool getIMUInterval(double t0, double t1, vector<pair<double, Eigen::Vector3d>>& accVector,
+        vector<pair<double, Eigen::Vector3d>>& gyrVector);
+    void getPoseInWorldFrame(Eigen::Matrix4d& T);
+    void getPoseInWorldFrame(int index, Eigen::Matrix4d& T);
     void predictPtsInNextFrame();
-    void outliersRejection(set<int> &removeIndex);
-    double reprojectionError(Matrix3d &Ri, Vector3d &Pi, Matrix3d &rici, Vector3d &tici,
-                                     Matrix3d &Rj, Vector3d &Pj, Matrix3d &ricj, Vector3d &ticj, 
-                                     double depth, Vector3d &uvi, Vector3d &uvj);
+    void outliersRejection(set<int>& removeIndex);
+    double reprojectionError(Matrix3d& Ri, Vector3d& Pi, Matrix3d& rici, Vector3d& tici,
+        Matrix3d& Rj, Vector3d& Pj, Matrix3d& ricj, Vector3d& ticj,
+        double depth, Vector3d& uvi, Vector3d& uvj);
     void updateLatestStates();
     void fastPredictIMU(double t, Eigen::Vector3d linear_acceleration, Eigen::Vector3d angular_velocity);
     bool IMUAvailable(double t);
-    void initFirstIMUPose(vector<pair<double, Eigen::Vector3d>> &accVector);
+    void initFirstIMUPose(vector<pair<double, Eigen::Vector3d>>& accVector);
 
     enum SolverFlag
     {
@@ -121,7 +121,7 @@ class Estimator
     Vector3d back_P0, last_P, last_P0;
     double Headers[(WINDOW_SIZE + 1)];
 
-    IntegrationBase *pre_integrations[(WINDOW_SIZE + 1)];
+    IntegrationBase* pre_integrations[(WINDOW_SIZE + 1)];
     Vector3d acc_0, gyr_0;
 
     vector<double> dt_buf[(WINDOW_SIZE + 1)];
@@ -158,11 +158,11 @@ class Estimator
 
     int loop_window_index;
 
-    MarginalizationInfo *last_marginalization_info;
-    vector<double *> last_marginalization_parameter_blocks;
+    MarginalizationInfo* last_marginalization_info;
+    vector<double*> last_marginalization_parameter_blocks;
 
     map<double, ImageFrame> all_image_frame;
-    IntegrationBase *tmp_pre_integration;
+    IntegrationBase* tmp_pre_integration;
 
     Eigen::Vector3d initP;
     Eigen::Matrix3d initR;

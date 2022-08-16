@@ -44,9 +44,9 @@ namespace GeographicLib {
     real _lat0, _lon0, _h0;
     real _x0, _y0, _z0, _r[dim2_];
     void IntForward(real lat, real lon, real h, real& x, real& y, real& z,
-                    real M[dim2_]) const;
+      real M[dim2_]) const;
     void IntReverse(real x, real y, real z, real& lat, real& lon, real& h,
-                    real M[dim2_]) const;
+      real M[dim2_]) const;
     void MatrixMultiply(real M[dim2_]) const;
   public:
 
@@ -62,9 +62,11 @@ namespace GeographicLib {
      * \e lat0 should be in the range [&minus;90&deg;, 90&deg;].
      **********************************************************************/
     LocalCartesian(real lat0, real lon0, real h0 = 0,
-                   const Geocentric& earth = Geocentric::WGS84())
+      const Geocentric& earth = Geocentric::WGS84())
       : _earth(earth)
-    { Reset(lat0, lon0, h0); }
+    {
+      Reset(lat0, lon0, h0);
+    }
 
     /**
      * Default constructor.
@@ -76,7 +78,9 @@ namespace GeographicLib {
      **********************************************************************/
     explicit LocalCartesian(const Geocentric& earth = Geocentric::WGS84())
       : _earth(earth)
-    { Reset(real(0), real(0), real(0)); }
+    {
+      Reset(real(0), real(0), real(0));
+    }
 
     /**
      * Reset the origin.
@@ -133,13 +137,14 @@ namespace GeographicLib {
      * Then we have \e v0 = \e M &sdot; \e v1.
      **********************************************************************/
     void Forward(real lat, real lon, real h, real& x, real& y, real& z,
-                 std::vector<real>& M)
-      const  {
+      std::vector<real>& M)
+      const {
       if (M.end() == M.begin() + dim2_) {
         real t[dim2_];
         IntForward(lat, lon, h, x, y, z, t);
         std::copy(t, t + dim2_, M.begin());
-      } else
+      }
+      else
         IntForward(lat, lon, h, x, y, z, NULL);
     }
 
@@ -187,22 +192,23 @@ namespace GeographicLib {
      * <i>M</i><sup>T</sup> is the transpose of \e M.
      **********************************************************************/
     void Reverse(real x, real y, real z, real& lat, real& lon, real& h,
-                 std::vector<real>& M)
+      std::vector<real>& M)
       const {
       if (M.end() == M.begin() + dim2_) {
         real t[dim2_];
         IntReverse(x, y, z, lat, lon, h, t);
         std::copy(t, t + dim2_, M.begin());
-      } else
+      }
+      else
         IntReverse(x, y, z, lat, lon, h, NULL);
     }
 
     /** \name Inspector functions
      **********************************************************************/
-    ///@{
-    /**
-     * @return latitude of the origin (degrees).
-     **********************************************************************/
+     ///@{
+     /**
+      * @return latitude of the origin (degrees).
+      **********************************************************************/
     Math::real LatitudeOrigin() const { return _lat0; }
 
     /**

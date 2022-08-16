@@ -1,8 +1,8 @@
 /*******************************************************
  * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
- * 
+ *
  * This file is part of VINS.
- * 
+ *
  * Licensed under the GNU General Public License v3.0;
  * you may not use this file except in compliance with the License.
  *******************************************************/
@@ -14,7 +14,7 @@ void ResidualBlockInfo::Evaluate()
     residuals.resize(cost_function->num_residuals());
 
     std::vector<int> block_sizes = cost_function->parameter_block_sizes();
-    raw_jacobians = new double *[block_sizes.size()];
+    raw_jacobians = new double* [block_sizes.size()];
     jacobians.resize(block_sizes.size());
 
     for (int i = 0; i < static_cast<int>(block_sizes.size()); i++)
@@ -80,7 +80,7 @@ void ResidualBlockInfo::Evaluate()
 MarginalizationInfo::~MarginalizationInfo()
 {
     //ROS_WARN("release marginlizationinfo");
-    
+
     for (auto it = parameter_block_data.begin(); it != parameter_block_data.end(); ++it)
         delete it->second;
 
@@ -88,30 +88,30 @@ MarginalizationInfo::~MarginalizationInfo()
     {
 
         delete[] factors[i]->raw_jacobians;
-        
+
         delete factors[i]->cost_function;
 
         delete factors[i];
     }
 }
 
-void MarginalizationInfo::addResidualBlockInfo(ResidualBlockInfo *residual_block_info)
+void MarginalizationInfo::addResidualBlockInfo(ResidualBlockInfo* residual_block_info)
 {
     factors.emplace_back(residual_block_info);
 
-    std::vector<double *> &parameter_blocks = residual_block_info->parameter_blocks;
+    std::vector<double*>& parameter_blocks = residual_block_info->parameter_blocks;
     std::vector<int> parameter_block_sizes = residual_block_info->cost_function->parameter_block_sizes();
 
     for (int i = 0; i < static_cast<int>(residual_block_info->parameter_blocks.size()); i++)
     {
-        double *addr = parameter_blocks[i];
+        double* addr = parameter_blocks[i];
         int size = parameter_block_sizes[i];
         parameter_block_size[reinterpret_cast<long>(addr)] = size;
     }
 
     for (int i = 0; i < static_cast<int>(residual_block_info->drop_set.size()); i++)
     {
-        double *addr = parameter_blocks[residual_block_info->drop_set[i]];
+        double* addr = parameter_blocks[residual_block_info->drop_set[i]];
         parameter_block_idx[reinterpret_cast<long>(addr)] = 0;
     }
 }
@@ -129,7 +129,7 @@ void MarginalizationInfo::preMarginalize()
             int size = block_sizes[i];
             if (parameter_block_data.find(addr) == parameter_block_data.end())
             {
-                double *data = new double[size];
+                double* data = new double[size];
                 memcpy(data, it->parameter_blocks[i], sizeof(double) * size);
                 parameter_block_data[addr] = data;
             }
@@ -183,7 +183,7 @@ void* ThreadsConstructA(void* threadsstruct)
 void MarginalizationInfo::marginalize()
 {
     int pos = 0;
-    for (auto &it : parameter_block_idx)
+    for (auto& it : parameter_block_idx)
     {
         it.second = pos;
         pos += localSize(parameter_block_size[it.first]);
@@ -191,7 +191,7 @@ void MarginalizationInfo::marginalize()
 
     m = pos;
 
-    for (const auto &it : parameter_block_size)
+    for (const auto& it : parameter_block_size)
     {
         if (parameter_block_idx.find(it.first) == parameter_block_idx.end())
         {
@@ -202,7 +202,7 @@ void MarginalizationInfo::marginalize()
 
     n = pos - m;
     //ROS_INFO("marginalization, pos: %d, m: %d, n: %d, size: %d", pos, m, n, (int)parameter_block_idx.size());
-    if(m == 0)
+    if (m == 0)
     {
         valid = false;
         printf("unstable tracking...\n");
@@ -256,20 +256,20 @@ void MarginalizationInfo::marginalize()
     for (int i = 0; i < NUM_THREADS; i++)
     {
         TicToc zero_matrix;
-        threadsstruct[i].A = Eigen::MatrixXd::Zero(pos,pos);
+        threadsstruct[i].A = Eigen::MatrixXd::Zero(pos, pos);
         threadsstruct[i].b = Eigen::VectorXd::Zero(pos);
         threadsstruct[i].parameter_block_size = parameter_block_size;
         threadsstruct[i].parameter_block_idx = parameter_block_idx;
-        int ret = pthread_create( &tids[i], NULL, ThreadsConstructA ,(void*)&(threadsstruct[i]));
+        int ret = pthread_create(&tids[i], NULL, ThreadsConstructA, (void*)&(threadsstruct[i]));
         if (ret != 0)
         {
             ROS_WARN("pthread_create error");
             ROS_BREAK();
         }
     }
-    for( int i = NUM_THREADS - 1; i >= 0; i--)  
+    for (int i = NUM_THREADS - 1; i >= 0; i--)
     {
-        pthread_join( tids[i], NULL ); 
+        pthread_join(tids[i], NULL);
         A += threadsstruct[i].A;
         b += threadsstruct[i].b;
     }
@@ -310,14 +310,14 @@ void MarginalizationInfo::marginalize()
     //      (linearized_jacobians.transpose() * linearized_residuals - b).sum());
 }
 
-std::vector<double *> MarginalizationInfo::getParameterBlocks(std::unordered_map<long, double *> &addr_shift)
+std::vector<double*> MarginalizationInfo::getParameterBlocks(std::unordered_map<long, double*>& addr_shift)
 {
-    std::vector<double *> keep_block_addr;
+    std::vector<double*> keep_block_addr;
     keep_block_size.clear();
     keep_block_idx.clear();
     keep_block_data.clear();
 
-    for (const auto &it : parameter_block_idx)
+    for (const auto& it : parameter_block_idx)
     {
         if (it.second >= m)
         {
@@ -332,7 +332,7 @@ std::vector<double *> MarginalizationInfo::getParameterBlocks(std::unordered_map
     return keep_block_addr;
 }
 
-MarginalizationFactor::MarginalizationFactor(MarginalizationInfo* _marginalization_info):marginalization_info(_marginalization_info)
+MarginalizationFactor::MarginalizationFactor(MarginalizationInfo* _marginalization_info) :marginalization_info(_marginalization_info)
 {
     int cnt = 0;
     for (auto it : marginalization_info->keep_block_size)
@@ -344,7 +344,7 @@ MarginalizationFactor::MarginalizationFactor(MarginalizationInfo* _marginalizati
     set_num_residuals(marginalization_info->n);
 };
 
-bool MarginalizationFactor::Evaluate(double const *const *parameters, double *residuals, double **jacobians) const
+bool MarginalizationFactor::Evaluate(double const* const* parameters, double* residuals, double** jacobians) const
 {
     //printf("internal addr,%d, %d\n", (int)parameter_block_sizes().size(), num_residuals());
     //for (int i = 0; i < static_cast<int>(keep_block_size.size()); i++)

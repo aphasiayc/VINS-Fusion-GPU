@@ -1,8 +1,8 @@
 /*******************************************************
  * Copyright (C) 2019, Aerial Robotics Group, Hong Kong University of Science and Technology
- * 
+ *
  * This file is part of VINS.
- * 
+ *
  * Licensed under the GNU General Public License v3.0;
  * you may not use this file except in compliance with the License.
  *
@@ -23,7 +23,7 @@
 
 GlobalOptimization globalEstimator;
 ros::Publisher pub_global_odometry, pub_global_path, pub_car;
-nav_msgs::Path *global_path;
+nav_msgs::Path* global_path;
 
 void publish_car_model(double t, Eigen::Vector3d t_w_car, Eigen::Quaterniond q_w_car)
 {
@@ -39,12 +39,12 @@ void publish_car_model(double t, Eigen::Vector3d t_w_car, Eigen::Quaterniond q_w
 
     Eigen::Matrix3d rot;
     rot << 0, 0, -1, 0, -1, 0, -1, 0, 0;
-    
+
     Eigen::Quaterniond Q;
-    Q = q_w_car * rot; 
-    car_mesh.pose.position.x    = t_w_car.x();
-    car_mesh.pose.position.y    = t_w_car.y();
-    car_mesh.pose.position.z    = t_w_car.z();
+    Q = q_w_car * rot;
+    car_mesh.pose.position.x = t_w_car.x();
+    car_mesh.pose.position.y = t_w_car.y();
+    car_mesh.pose.position.z = t_w_car.z();
     car_mesh.pose.orientation.w = Q.w();
     car_mesh.pose.orientation.x = Q.x();
     car_mesh.pose.orientation.y = Q.y();
@@ -64,7 +64,7 @@ void publish_car_model(double t, Eigen::Vector3d t_w_car, Eigen::Quaterniond q_w
     pub_car.publish(markerArray_msg);
 }
 
-void GPS_callback(const sensor_msgs::NavSatFixConstPtr &GPS_msg)
+void GPS_callback(const sensor_msgs::NavSatFixConstPtr& GPS_msg)
 {
     //printf("GPS_callback! \n");
     double t = GPS_msg->header.stamp.toSec();
@@ -78,7 +78,7 @@ void GPS_callback(const sensor_msgs::NavSatFixConstPtr &GPS_msg)
     globalEstimator.inputGPS(t, latitude, longitude, altitude, pos_accuracy);
 }
 
-void vio_callback(const nav_msgs::Odometry::ConstPtr &pose_msg)
+void vio_callback(const nav_msgs::Odometry::ConstPtr& pose_msg)
 {
     //printf("vio_callback! \n");
     double t = pose_msg->header.stamp.toSec();
@@ -91,7 +91,7 @@ void vio_callback(const nav_msgs::Odometry::ConstPtr &pose_msg)
     globalEstimator.inputOdom(t, vio_t, vio_q);
 
     Eigen::Vector3d global_t;
-    Eigen:: Quaterniond global_q;
+    Eigen::Quaterniond global_q;
     globalEstimator.getGlobalOdom(global_t, global_q);
 
     nav_msgs::Odometry odometry;
@@ -110,7 +110,7 @@ void vio_callback(const nav_msgs::Odometry::ConstPtr &pose_msg)
     publish_car_model(t, global_t, global_q);
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     ros::init(argc, argv, "globalEstimator");
     ros::NodeHandle n("~");
