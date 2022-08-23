@@ -48,7 +48,7 @@ int FeatureManager::getFeatureCount()
     return cnt;
 }
 
-
+// decide if the given frame is a key frame
 bool FeatureManager::addFeatureCheckParallax(int frame_count, const map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>>& image, double td)
 {
     ROS_DEBUG("input feature: %d", (int)image.size());
@@ -299,6 +299,7 @@ void FeatureManager::initFramePoseByPnP(int frameCnt, Vector3d Ps[], Matrix3d Rs
     }
 }
 
+// estimate feature depth
 void FeatureManager::triangulate(int frameCnt, Vector3d Ps[], Matrix3d Rs[], Vector3d tic[], Matrix3d ric[])
 {
     for (auto& it_per_id : feature)

@@ -61,10 +61,11 @@ public:
     double distance(cv::Point2f& pt1, cv::Point2f& pt2);
     void removeOutliers(set<int>& removePtsIds);
     cv::Mat getTrackImage();
+    cv::Mat getTrackImageBW();
     bool inBorder(const cv::Point2f& pt);
 
     int row, col;
-    cv::Mat imTrack;
+    cv::Mat imTrack, imTrackBW;
     cv::Mat mask;
     cv::Mat fisheye_mask;
     cv::Mat prev_img, cur_img;

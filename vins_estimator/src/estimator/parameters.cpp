@@ -38,6 +38,7 @@ int USE_IMU;
 int MULTIPLE_THREAD;
 int USE_GPU;
 int USE_GPU_ACC_FLOW;
+int USE_GPU_SOLVER;
 int PUB_RECTIFY;
 Eigen::Matrix3d rectify_R_left;
 Eigen::Matrix3d rectify_R_right;
@@ -106,6 +107,7 @@ void readParameters(std::string config_file)
 
     USE_GPU = fsSettings["use_gpu"];
     USE_GPU_ACC_FLOW = fsSettings["use_gpu_acc_flow"];
+    USE_GPU_SOLVER = fsSettings["use_gpu_solver"];
 
     USE_IMU = fsSettings["imu"];
     printf("USE_IMU: %d\n", USE_IMU);

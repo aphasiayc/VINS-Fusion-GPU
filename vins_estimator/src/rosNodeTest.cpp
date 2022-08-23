@@ -29,7 +29,6 @@ queue<sensor_msgs::ImageConstPtr> img0_buf;
 queue<sensor_msgs::ImageConstPtr> img1_buf;
 std::mutex m_buf;
 
-
 void img0_callback(const sensor_msgs::ImageConstPtr& img_msg)
 {
     m_buf.lock();
@@ -43,7 +42,6 @@ void img1_callback(const sensor_msgs::ImageConstPtr& img_msg)
     img1_buf.push(img_msg);
     m_buf.unlock();
 }
-
 
 cv::Mat getImageFromMsg(const sensor_msgs::ImageConstPtr& img_msg)
 {
@@ -130,7 +128,6 @@ void sync_process()
     }
 }
 
-
 void imu_callback(const sensor_msgs::ImuConstPtr& imu_msg)
 {
     double t = imu_msg->header.stamp.toSec();
@@ -145,7 +142,6 @@ void imu_callback(const sensor_msgs::ImuConstPtr& imu_msg)
     estimator.inputIMU(t, acc, gyr);
     return;
 }
-
 
 void feature_callback(const sensor_msgs::PointCloudConstPtr& feature_msg)
 {

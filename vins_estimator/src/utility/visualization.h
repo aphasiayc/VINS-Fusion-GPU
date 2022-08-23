@@ -61,3 +61,5 @@ void pubKeyframe(const Estimator& estimator);
 void pubRelocalization(const Estimator& estimator);
 
 void pubCar(const Estimator& estimator, const std_msgs::Header& header);
+
+void pubTracker(const Estimator& estimator, const cv::Mat& image);

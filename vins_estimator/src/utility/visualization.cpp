@@ -9,6 +9,8 @@
 
 #include "visualization.h"
 
+#include <cv_bridge/cv_bridge.h>
+
 using namespace ros;
 using namespace Eigen;
 ros::Publisher pub_odometry, pub_latest_odometry;
@@ -25,6 +27,7 @@ nav_msgs::Path path;
 ros::Publisher pub_keyframe_pose;
 ros::Publisher pub_keyframe_point;
 ros::Publisher pub_extrinsic;
+ros::Publisher pub_tracker;
 
 CameraPoseVisualization cameraposevisual(1, 0, 0, 1);
 static double sum_of_path = 0;
@@ -48,6 +51,7 @@ void registerPub(ros::NodeHandle& n)
     pub_keyframe_pose = n.advertise<nav_msgs::Odometry>("keyframe_pose", 1000);
     pub_keyframe_point = n.advertise<sensor_msgs::PointCloud>("keyframe_point", 1000);
     pub_extrinsic = n.advertise<nav_msgs::Odometry>("extrinsic", 1000);
+    pub_tracker = n.advertise<sensor_msgs::Image>("feature_tracker", 100);
 
     cameraposevisual.setScale(0.1);
     cameraposevisual.setLineWidth(0.01);
@@ -286,7 +290,6 @@ void pubCameraPose(const Estimator& estimator, const std_msgs::Header& header)
     }
 }
 
-
 void pubPointCloud(const Estimator& estimator, const std_msgs::Header& header)
 {
     sensor_msgs::PointCloud point_cloud, loop_point_cloud;
@@ -344,7 +347,6 @@ void pubPointCloud(const Estimator& estimator, const std_msgs::Header& header)
     }
     pub_margin_cloud.publish(margin_cloud);
 }
-
 
 void pubTF(const Estimator& estimator, const std_msgs::Header& header)
 {
@@ -453,4 +455,18 @@ void pubKeyframe(const Estimator& estimator)
         }
         pub_keyframe_point.publish(point_cloud);
     }
+}
+
+void pubTracker(const Estimator& estimator, const cv::Mat& image) {
+    cv_bridge::CvImage msg;
+
+    std_msgs::Header header;
+    header.frame_id = "world";
+    header.stamp = ros::Time::now();
+
+    msg.header = header;
+    msg.encoding = sensor_msgs::image_encodings::MONO8; // Or whatever
+    msg.image = image; // Your cv::Mat
+
+    pub_tracker.publish(msg.toImageMsg());
 }

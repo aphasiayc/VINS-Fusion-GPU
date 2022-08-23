@@ -60,7 +60,10 @@ void Estimator::inputImage(double t, const cv::Mat& _img, const cv::Mat& _img1)
         featureFrame = featureTracker.trackImage(t, _img);
     else
         featureFrame = featureTracker.trackImage(t, _img, _img1);
-
+    if (SHOW_TRACK) {
+        cv::Mat imTrack = featureTracker.getTrackImageBW();
+        pubTracker(*this, imTrack);
+    }
     // printf("featureTracker time: %fms\n", featureTrackerTime.toc());
 
     // if(begin_time_count--<=0)
@@ -112,7 +115,6 @@ void Estimator::inputFeature(double t, const map<int, vector<pair<int, Eigen::Ma
     if (!MULTIPLE_THREAD)
         processMeasurements();
 }
-
 
 bool Estimator::getIMUInterval(double t0, double t1, vector<pair<double, Eigen::Vector3d>>& accVector,
     vector<pair<double, Eigen::Vector3d>>& gyrVector)
@@ -232,7 +234,6 @@ void Estimator::processMeasurements()
     }
 }
 
-
 void Estimator::initFirstIMUPose(vector<pair<double, Eigen::Vector3d>>& accVector)
 {
     printf("init first imu pose\n");
@@ -261,7 +262,6 @@ void Estimator::initFirstPose(Eigen::Vector3d p, Eigen::Matrix3d r)
     initP = p;
     initR = r;
 }
-
 
 void Estimator::clearState()
 {
@@ -347,6 +347,7 @@ void Estimator::processIMU(double t, double dt, const Vector3d& linear_accelerat
     gyr_0 = angular_velocity;
 }
 
+// input: featureFrame, time
 void Estimator::processImage(const map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>>& image, const double header)
 {
     ROS_DEBUG("new image coming ------------------------------------------");
@@ -1048,12 +1049,15 @@ void Estimator::optimization()
     ceres::Solver::Options options;
 
     options.linear_solver_type = ceres::DENSE_SCHUR;
-    //options.num_threads = 2;
+    options.num_threads = 2;
     options.trust_region_strategy_type = ceres::DOGLEG;
     options.max_num_iterations = NUM_ITERATIONS;
     //options.use_explicit_schur_complement = true;
     //options.minimizer_progress_to_stdout = true;
     //options.use_nonmonotonic_steps = true;
+    if (USE_GPU_SOLVER)
+        options.dense_linear_algebra_library_type = ceres::CUDA;
+
     if (marginalization_flag == MARGIN_OLD)
         options.max_solver_time_in_seconds = SOLVER_TIME * 4.0 / 5.0;
     else
@@ -1063,7 +1067,7 @@ void Estimator::optimization()
     ceres::Solve(options, &problem, &summary);
     //cout << summary.BriefReport() << endl;
     ROS_DEBUG("Iterations : %d", static_cast<int>(summary.iterations.size()));
-    //printf("solver costs: %f \n", t_solver.toc());
+    printf("solver costs: %f \n", t_solver.toc());
 
     double2vector();
     //printf("frame_count: %d \n", frame_count);
@@ -1380,7 +1384,6 @@ void Estimator::slideWindowOld()
     else
         f_manager.removeBack();
 }
-
 
 void Estimator::getPoseInWorldFrame(Eigen::Matrix4d& T)
 {

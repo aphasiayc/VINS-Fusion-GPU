@@ -60,6 +60,8 @@ FeatureTracker::FeatureTracker()
     sum_n = 0;
 }
 
+// sort `cur_pts` by tracked counts
+// mask out `cur_pts`
 void FeatureTracker::setMask()
 {
     mask = cv::Mat(row, col, CV_8UC1, cv::Scalar(255));
@@ -91,6 +93,8 @@ void FeatureTracker::setMask()
     }
 }
 
+// when there are not enough `cur_pts`, detect good feature to tract and store them in `n_pts`
+// add `n_pts` to `cur_pts`
 void FeatureTracker::addPoints()
 {
     for (auto& p : n_pts)
@@ -132,6 +136,7 @@ map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> FeatureTracker::trackIm
             d_pyrLK_sparse_prediction = cv::cuda::SparsePyrLKOpticalFlow::create(cv::Size(LK_SIZE, LK_SIZE), 1, 30, true);
     }
 
+    // lk track previous points in current left image, store tracked features in `cur_pts`
     if (prev_pts.size() > 0)
     {
         vector<uchar> status;
@@ -262,7 +267,7 @@ map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> FeatureTracker::trackIm
 
     for (auto& n : track_cnt)
         n++;
-
+    // add points to track if necessary
     if (1)
     {
         setMask();
@@ -329,6 +334,7 @@ map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> FeatureTracker::trackIm
     cur_un_pts = undistortedPts(cur_pts, m_camera[0]);
     pts_velocity = ptsVelocity(ids, cur_un_pts, cur_un_pts_map, prev_un_pts_map);
 
+    // lk track current points in current right images, store tracked features in `cur_right_pts`
     if (!_img1.empty() && stereo_cam)
     {
         ids_right.clear();
@@ -574,7 +580,7 @@ void FeatureTracker::showUndistortion(const string& name)
         }
     }
 
-    cv::imshow(name, undistortedImg);
+    // cv::imshow(name, undistortedImg);
     // cv::waitKey(0);
 }
 
@@ -672,6 +678,7 @@ void FeatureTracker::drawTrack(const cv::Mat& imLeft, const cv::Mat& imRight,
             cv::arrowedLine(imTrack, curLeftPts[i], mapIt->second, cv::Scalar(0, 255, 0), 1, 8, 0, 0.2);
         }
     }
+    cv::cvtColor(imTrack, imTrackBW, cv::COLOR_RGB2GRAY);
 
     //draw prediction
     /*
@@ -686,7 +693,7 @@ void FeatureTracker::drawTrack(const cv::Mat& imLeft, const cv::Mat& imRight,
     //cv::Mat imCur2Compress;
     //cv::resize(imCur2, imCur2Compress, cv::Size(cols, rows / 2));
 
-    cv::imshow("tracking", imTrack);
+    // cv::imshow("tracking", imTrack);
     // cv::waitKey(2);
 }
 
@@ -737,4 +744,8 @@ void FeatureTracker::removeOutliers(set<int>& removePtsIds)
 cv::Mat FeatureTracker::getTrackImage()
 {
     return imTrack;
+}
+
+cv::Mat FeatureTracker::getTrackImageBW() {
+    return imTrackBW;
 }
