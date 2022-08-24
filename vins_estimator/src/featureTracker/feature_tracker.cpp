@@ -394,7 +394,7 @@ map<int, vector<pair<int, Eigen::Matrix<double, 7, 1>>>> FeatureTracker::trackIm
                     cv::cuda::GpuMat reverseLeft_gpu_Pts;
                     cv::cuda::GpuMat status_gpu_RightLeft;
                     // cv::Ptr<cv::cuda::SparsePyrLKOpticalFlow> d_pyrLK_sparse = cv::cuda::SparsePyrLKOpticalFlow::create(cv::Size(LK_SIZE, LK_SIZE), LK_N, 30, false);
-                    reverseLeft_gpu_Pts = cur_right_gpu_pts;
+                    reverseLeft_gpu_Pts = cur_gpu_pts;
                     // cv::Ptr<cv::cuda::SparsePyrLKOpticalFlow> d_pyrLK_sparse_prediction = cv::cuda::SparsePyrLKOpticalFlow::create(cv::Size(LK_SIZE, LK_SIZE), 1, 30, true);
                     d_pyrLK_sparse_prediction->calc(right_gpu_Img, cur_gpu_img, cur_right_gpu_pts, reverseLeft_gpu_Pts, status_gpu_RightLeft);
 
@@ -651,11 +651,12 @@ void FeatureTracker::drawTrack(const cv::Mat& imLeft, const cv::Mat& imRight,
         imTrack = imLeft.clone();
     cv::cvtColor(imTrack, imTrack, cv::COLOR_GRAY2RGB);
 
-    for (size_t j = 0; j < curLeftPts.size(); j++)
+    for (size_t i = 0; i < curLeftPts.size(); i++)
     {
-        double len = std::min(1.0, 1.0 * track_cnt[j] / 20);
-        cv::circle(imTrack, curLeftPts[j], 2, cv::Scalar(255 * (1 - len), 0, 255 * len), 2);
+        double len = std::min(1.0, 1.0 * track_cnt[i] / 20);
+        cv::circle(imTrack, curLeftPts[i], 2, cv::Scalar(255 * (1 - len), 0, 255 * len), 2);
     }
+
     if (!imRight.empty() && stereo_cam)
     {
         for (size_t i = 0; i < curRightPts.size(); i++)
